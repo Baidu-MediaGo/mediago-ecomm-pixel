@@ -90,6 +90,10 @@ ___TEMPLATE_PARAMETERS___
       {
         "value": "app_install",
         "displayValue": "App Install"
+      },
+      {
+        "value": "click_button",
+        "displayValue": "Click Button"
       }
     ],
     "simpleValueType": true,
@@ -135,7 +139,8 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "defaultValue": "USD",
-    "macrosInSelect": true
+    "macrosInSelect": true,
+    "valueValidators": []
   },
   {
     "type": "TEXT",
@@ -260,7 +265,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "list",
         "displayName": "List",
         "simpleValueType": true,
-        "help": "Select the GTM Variable that returns a table containing the list of product IDs, unit price and quantity in the user\u0027s basket or order. Formatted as follows : [{\u0027id\u0027:\u0027productID1\u0027, \u0027price\u0027:0.02, \u0027quantity\u0027:1},{\u0027id\u0027:\u0027productID2\u0027, \u0027price\u0027:0.03, \u0027quantity\u0027:2}]",
+        "help": "Select the GTM Variable that returns a table containing the list of product IDs, unit price and quantity in the user\u0027s basket or order. Formatted as follows :[{\"id\":\"productID1\", \"price\":0.02, \"quantity\":1},{\"id\":\"productID2\", \"price\":0.03, \"quantity\":2}]",
         "enablingConditions": [
           {
             "paramName": "conversionType",
@@ -313,6 +318,7 @@ const injectScript = require('injectScript');
 const copyFromDataLayer = require('copyFromDataLayer');
 const copyFromWindow = require('copyFromWindow');
 const createQueue = require('createQueue');
+const JSON = require('JSON');
 
 const pixelUrl = 'https://cdn.mediago.io/js/test/pixel.js';
 // Load the Mediago script if not already loaded
@@ -338,7 +344,8 @@ const conversionTypeMap = {
     start_checkout: 'start_checkout',
     purchase: 'purchase',
     add_to_wishlist: 'add_to_wishlist',
-    lead: 'lead'
+    lead: 'lead',
+    click_button: 'click_button'
 };
 
 // 通用参数
@@ -377,14 +384,14 @@ if (data.ifUseGoogleEnhancedEC) {
     // 商品列表
     params.list = ecommerce.items
         ? ecommerce.items.map(item => {
-              return {
-                  item_id: item.item_id, // 商品id
-                  quantity: item.quantity, // 数量
-                  item_type: 0, // 商品类别
-                  // productName: item.item_name, // 商品名称
-                  origin_price: item.price // 价格
-              };
-          })
+            return {
+                item_id: item.item_id, // 商品id
+                quantity: item.quantity, // 数量
+                item_type: 0, // 商品类别
+                // productName: item.item_name, // 商品名称
+                origin_price: item.price // 价格
+            };
+        })
         : [];
 
     log('params.list:', params.list);
@@ -396,22 +403,31 @@ if (data.ifUseGoogleEnhancedEC) {
     }
 } else {
     // 广告主手动录入参数
-    params.list = data.list; // 商品列表
+    const listAry = JSON.parse(data.list) || [];
+    params.list = listAry.map(item => {
+        return {
+            item_id: item.id, // 商品id
+            quantity: item.quantity, // 数量
+            item_type: 0, // 商品类别
+            // productName: item.item_name, // 商品名称
+            origin_price: item.price + '' // 价格
+        };
+    }); // 商品列表
     params.category = data.category; // 商品类别
     params.orderId = data.orderId; // 订单id
     params.productId = data.productId; // 商品id
     params.productName = data.productName; // 商品名称
 
     switch (data.conversionType) {
-        case conversionTypeMap.search:
-            params.query = data.query; // 查询条件
-            break;
-        // case 'add_to_cart':
-        // case 'start_checkout':
-        // case 'purchase':
-        //     break;
-        default:
-            break;
+    case conversionTypeMap.search:
+        params.query = data.query; // 查询条件
+        break;
+    // case 'add_to_cart':
+    // case 'start_checkout':
+    // case 'purchase':
+    //     break;
+    default:
+        break;
     }
 }
 
