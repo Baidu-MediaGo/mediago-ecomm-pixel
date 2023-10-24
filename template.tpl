@@ -139,14 +139,22 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "defaultValue": "USD",
-    "macrosInSelect": true
+    "macrosInSelect": true,
+    "valueValidators": []
   },
   {
     "type": "TEXT",
     "name": "value",
     "displayName": "Conversion Value",
     "simpleValueType": true,
-    "help": "The total value of the order (conversion) in the given currency.  Example: 1.98"
+    "help": "The total value of the order (conversion) in the given currency.  Example: 1.98",
+    "enablingConditions": [
+      {
+        "paramName": "ifUseGoogleEnhancedEC",
+        "paramValue": false,
+        "type": "EQUALS"
+      }
+    ]
   },
   {
     "type": "SELECT",
@@ -376,14 +384,14 @@ if (data.ifUseGoogleEnhancedEC) {
     // 商品列表
     params.list = ecommerce.items
         ? ecommerce.items.map(item => {
-              return {
-                  item_id: item.item_id, // 商品id
-                  quantity: item.quantity, // 数量
-                  item_type: 0, // 商品类别
-                  // productName: item.item_name, // 商品名称
-                  origin_price: item.price // 价格
-              };
-          })
+            return {
+                item_id: item.item_id, // 商品id
+                quantity: item.quantity, // 数量
+                item_type: 0, // 商品类别
+                // productName: item.item_name, // 商品名称
+                origin_price: item.price // 价格
+            };
+        })
         : [];
 
     log('params.list:', params.list);
@@ -396,7 +404,7 @@ if (data.ifUseGoogleEnhancedEC) {
 } else {
     // 广告主手动录入参数
     const listAry = JSON.parse(data.list) || [];
-	params.list = listAry.map(item => {
+    params.list = listAry.map(item => {
         return {
             item_id: item.id, // 商品id
             quantity: item.quantity, // 数量
@@ -411,15 +419,15 @@ if (data.ifUseGoogleEnhancedEC) {
     params.productName = data.productName; // 商品名称
 
     switch (data.conversionType) {
-        case conversionTypeMap.search:
-            params.query = data.query; // 查询条件
-            break;
-        // case 'add_to_cart':
-        // case 'start_checkout':
-        // case 'purchase':
-        //     break;
-        default:
-            break;
+    case conversionTypeMap.search:
+        params.query = data.query; // 查询条件
+        break;
+    // case 'add_to_cart':
+    // case 'start_checkout':
+    // case 'purchase':
+    //     break;
+    default:
+        break;
     }
 }
 
