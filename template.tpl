@@ -1,12 +1,4 @@
-___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "TAG",
@@ -47,7 +39,12 @@ ___TEMPLATE_PARAMETERS___
     "name": "ifUseGoogleEnhancedEC",
     "checkboxText": "Use Google Enhanced Ecommerce",
     "simpleValueType": true,
-    "help": "Choose this option if you have a Google Enhanced Ecommerce data layer installed on your website. When you select this option, the necessary parameters will be automatically gathered from the data layer. See https://developers.google.com/analytics/devguides/collection/ua/gtm/enhanced-ecommerce for details."
+    "help": "Choose this option if you have a Google Enhanced Ecommerce data layer installed on your website. When you select this option, the necessary parameters will be automatically gathered from the data layer. See https://developers.google.com/analytics/devguides/collection/ua/gtm/enhanced-ecommerce for details.",
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ]
   },
   {
     "type": "SELECT",
@@ -113,16 +110,15 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "SELECT",
     "name": "currency",
-    "displayName": "currency",
-    "macrosInSelect": false,
+    "displayName": "Currency",
     "selectItems": [
-      {
-        "value": "EUR",
-        "displayValue": "EUR"
-      },
       {
         "value": "USD",
         "displayValue": "USD"
+      },
+      {
+        "value": "EUR",
+        "displayValue": "EUR"
       },
       {
         "value": "JPY",
@@ -130,21 +126,23 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "help": "Recommended: ISO 4217 code. Examples: \"EUR\", \"USD\", \"JPY\".",
+    "help": "The currency field will be used for internal currency conversion within our system. Please following ISO 4217 three-letter currency codes:.https://en.wikipedia.org/wiki/ISO_4217",
     "enablingConditions": [
       {
         "paramName": "ifUseGoogleEnhancedEC",
         "paramValue": false,
         "type": "EQUALS"
       }
-    ]
+    ],
+    "defaultValue": "USD",
+    "macrosInSelect": true
   },
   {
     "type": "TEXT",
     "name": "value",
     "displayName": "Conversion Value",
     "simpleValueType": true,
-    "help": "This is used to add information like conversion price to your conversion.",
+    "help": "The total value of the order (conversion) in the given currency.  Example: 1.98",
     "enablingConditions": [
       {
         "paramName": "ifUseGoogleEnhancedEC",
@@ -163,16 +161,16 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "Home Page"
       },
       {
-        "value": 2,
-        "displayValue": "Category List Page"
+        "value": 1,
+        "displayValue": "Product Detail Page"
       },
       {
         "value": 3,
         "displayValue": "Search Page"
       },
       {
-        "value": 1,
-        "displayValue": "Product Detail Page"
+        "value": 2,
+        "displayValue": "Category List Page"
       },
       {
         "value": 99,
@@ -192,7 +190,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "query",
-    "displayName": "query",
+    "displayName": "Query",
     "simpleValueType": true,
     "help": "Recommended for Search conversions: The text string that was searched for. For example, when a user searches for a product on your website, you can forward the keyword being searched here.",
     "enablingConditions": [
@@ -259,10 +257,10 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "type": "TEXT",
-        "name": "cur",
-        "displayName": "Currency",
+        "name": "list",
+        "displayName": "List",
         "simpleValueType": true,
-        "help": "The currency field will be used for internal currency conversion within our system. Please following ISO 4217 three-letter currency codes:.https://en.wikipedia.org/wiki/ISO_4217",
+        "help": "Select the GTM Variable that returns a table containing the list of product IDs, unit price and quantity in the user\u0027s basket or order. Formatted as follows : [{\u0027id\u0027:\u0027productID1\u0027, \u0027price\u0027:0.02, \u0027quantity\u0027:1},{\u0027id\u0027:\u0027productID2\u0027, \u0027price\u0027:0.03, \u0027quantity\u0027:2}]",
         "enablingConditions": [
           {
             "paramName": "conversionType",
@@ -278,65 +276,6 @@ ___TEMPLATE_PARAMETERS___
             "paramName": "conversionType",
             "paramValue": "purchase",
             "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "add_to_cart",
-            "type": "EQUALS"
-          }
-        ],
-        "defaultValue": "USD"
-      },
-      {
-        "type": "PARAM_TABLE",
-        "name": "list",
-        "displayName": "",
-        "paramTableColumns": [
-          {
-            "param": {
-              "type": "TEXT",
-              "name": "productId",
-              "displayName": "Product ID or SKU",
-              "simpleValueType": true,
-              "help": "The product ID or SKU of the item that was viewed, added to the cart or added to wishlist."
-            },
-            "isUnique": true
-          },
-          {
-            "param": {
-              "type": "TEXT",
-              "name": "price",
-              "displayName": "Unit Price",
-              "simpleValueType": true,
-              "help": "The unit price of each item. This field is for integers or decimals and does not need to include a currency.",
-              "valueValidators": [
-                {
-                  "type": "REGEX",
-                  "args": [
-                    "^([0-9]*[.])?[0-9]+$"
-                  ]
-                }
-              ]
-            },
-            "isUnique": false
-          },
-          {
-            "param": {
-              "type": "TEXT",
-              "name": "quantity",
-              "displayName": "Quantity",
-              "simpleValueType": true,
-              "help": "Quantity of this item. This field is for integers.",
-              "valueValidators": [
-                {
-                  "type": "REGEX",
-                  "args": [
-                    "^[0-9]+$"
-                  ]
-                }
-              ]
-            },
-            "isUnique": false
           }
         ]
       },
@@ -344,7 +283,8 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT",
         "name": "category",
         "displayName": "Category of the product or page",
-        "simpleValueType": true
+        "simpleValueType": true,
+        "help": "This value should match the category values sent in your product catalog. (string)"
       }
     ],
     "enablingConditions": [
@@ -358,7 +298,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "customerId",
-    "displayName": "customerId",
+    "displayName": "Customer Id",
     "simpleValueType": true,
     "help": "The user\u0027s Id in your website.You can choose provide this id to us for promote your ad performance"
   }
