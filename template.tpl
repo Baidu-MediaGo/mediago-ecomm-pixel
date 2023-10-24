@@ -320,17 +320,20 @@ const copyFromWindow = require('copyFromWindow');
 const createQueue = require('createQueue');
 const JSON = require('JSON');
 
-const pixelUrl = 'https://cdn.mediago.io/js/test/pixel.js';
-// Load the Mediago script if not already loaded
-// pixel对于iframe的操作，在编辑器内不被允许，会报错，不影响使用。
-injectScript(pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, '_tfa_script');
+const MediagoPixelStatus = copyFromWindow('_mediago_pixel_status');
+log('MediagoPixelStatus:', MediagoPixelStatus);
+if (!MediagoPixelStatus) {
+    const pixelUrl = 'https://cdn.mediago.io/js/pixel.js';
+    // Load the Mediago script if not already loaded
+    // pixel对于iframe的操作，在编辑器内不被允许，会报错，不影响使用。
+    injectScript(pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'pixel_megoaa_script');
 
-const megoaaPush = createQueue('_megoaa'); // 创建数组
-const megoaa = copyFromWindow('_megoaa'); // 获取window中的数组
-log('megoaa:', megoaa);
-megoaaPush({ type: 'event', name: 'pageview' });
-megoaaPush({ type: 'nextjump', link: '' });
-log('megoaa:', megoaa);
+    const megoaaPush = createQueue('_megoaa'); // 创建数组
+    // const megoaa = copyFromWindow('_megoaa'); // 获取window中的数组
+    // log('megoaa:', megoaa);
+    megoaaPush({ type: 'event', name: 'pageview' });
+    megoaaPush({ type: 'nextjump', link: '' });
+}
 
 log('data =', data);
 
@@ -433,6 +436,7 @@ if (data.ifUseGoogleEnhancedEC) {
 
 log('params:', params);
 
+const megoaaPush = createQueue('_megoaa'); // 创建数组
 megoaaPush({
     type: 'gtm',
     acid: params.accountId,
@@ -441,7 +445,6 @@ megoaaPush({
     value: params.value,
     params: params
 });
-log('megoaa:', megoaa);
 
 // 发送数据
 
@@ -599,6 +602,45 @@ ___WEB_PERMISSIONS___
                   {
                     "type": 8,
                     "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "_mediago_pixel_status"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
                   }
                 ]
               }
