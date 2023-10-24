@@ -3,3 +3,7 @@ documentation: "https://business.mediago.io/platform/helpCenter/conversionTracki
 versions:
   - sha: 1ab38a63a99a0078376e1f32c95ea5cc7eb0f490
     changeNotes: Mediago-Ecomm-Pixel Initial Version
+  - sha: e4d2f7bb8d5a3d94047332f8486db73221f2bc2b
+    changeNotes: Mediago-Ecomm-Pixel update
+
+    
