@@ -5,7 +5,7 @@
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "MediaGo Pixel",
+  "displayName": "MediaGo Pixel 2",
   "brand": {
     "id": "brand_dummy",
     "displayName": "",
@@ -94,6 +94,10 @@ ___TEMPLATE_PARAMETERS___
       {
         "value": "click_button",
         "displayValue": "Click Button"
+      },
+      {
+        "value": "pageview",
+        "displayValue": "Pageview"
       }
     ],
     "simpleValueType": true,
@@ -139,8 +143,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "defaultValue": "USD",
-    "macrosInSelect": true,
-    "valueValidators": []
+    "macrosInSelect": true
   },
   {
     "type": "TEXT",
@@ -348,7 +351,8 @@ const conversionTypeMap = {
     purchase: 'purchase',
     add_to_wishlist: 'add_to_wishlist',
     lead: 'lead',
-    click_button: 'click_button'
+    click_button: 'click_button',
+	pageview: 'pageview'
 };
 
 // 通用参数
@@ -406,7 +410,7 @@ if (data.ifUseGoogleEnhancedEC) {
     }
 } else {
     // 广告主手动录入参数
-    const listAry = JSON.parse(data.list) || [];
+    const listAry = data.list ? JSON.parse(data.list) : [];
     params.list = listAry.map(item => {
         return {
             item_id: item.id, // 商品id
@@ -436,15 +440,17 @@ if (data.ifUseGoogleEnhancedEC) {
 
 log('params:', params);
 
-const megoaaPush = createQueue('_megoaa'); // 创建数组
-megoaaPush({
-    type: 'gtm',
-    acid: params.accountId,
-    conversionType: params.conversionType,
-    importantInTotalConversion: params.importantInTotalConversion,
-    value: params.value,
-    params: params
-});
+if(params.conversionType != conversionTypeMap.pageview) {
+	const megoaaPush = createQueue('_megoaa'); // 创建数组
+	megoaaPush({
+		type: 'gtm',
+		acid: params.accountId,
+		conversionType: params.conversionType,
+		importantInTotalConversion: params.importantInTotalConversion,
+		value: params.value,
+		params: params
+	});
+}
 
 // 发送数据
 
@@ -531,6 +537,13 @@ ___WEB_PERMISSIONS___
         "versionId": "1"
       },
       "param": [
+        {
+          "key": "allowedKeys",
+          "value": {
+            "type": 1,
+            "string": "specific"
+          }
+        },
         {
           "key": "keyPatterns",
           "value": {
