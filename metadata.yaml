@@ -1,7 +1,7 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
-  - sha: 8d3c154679df8c1fea4abc5d85832fae4806fc6d
+  - sha: 30485df97a7b44e4c9fa9e7896176d38d2c9e781
     changeNotes: Mediago-Ecomm-Pixel update
   - sha: 1ab38a63a99a0078376e1f32c95ea5cc7eb0f490
     changeNotes: Mediago-Ecomm-Pixel Initial Version
