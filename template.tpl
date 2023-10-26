@@ -5,7 +5,7 @@
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "MediaGo Pixel 2",
+  "displayName": "MediaGo Pixel",
   "brand": {
     "id": "brand_dummy",
     "displayName": "",
