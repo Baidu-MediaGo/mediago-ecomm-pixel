@@ -121,7 +121,7 @@ ___TEMPLATE_PARAMETERS___
     "checkboxText": "Yes",
     "simpleValueType": true,
     "displayName": "Important Conversion",
-    "help": "It\u0027s an important conversion. \nThis conversion will be included in the conversion metrics (CV, CVR, CPA, etc.) in the dashboard. \nAlgorithms such as Smartbid will optimize based on this conversion."
+    "help": "If checked, this will be marked as an important conversion. Important conversion will be included in the conversion metrics (CV, CVR, CPA, etc.) in the dashboard. Algorithms such as Smartbid will optimize based on this conversion."
   },
   {
     "type": "SELECT",
@@ -360,16 +360,31 @@ const conversionTypeMap = {
     add_to_wishlist: 'add_to_wishlist',
     lead: 'lead',
     click_button: 'click_button',
-	pageview: 'pageview'
+    pageview: 'pageview'
+};
+
+const pageType = {
+    home_page: 0,
+    product_detail_page: 1,
+    search_page: 1,
+    category_list_page: 1
+};
+
+const CvType2ParamKeyMap = {
+    view_content_category_list_page: 'impressions', // 衡量商品展示情况
+    view_content_product_detail_page: 'detail', // 衡量商品详情的查看情况
+    add_to_cart: 'add', // 衡量在购物车中添加
+    start_checkout: 'checkout', // 衡量结帐情况
+    purchase: 'purchase' // 衡量购买情况
 };
 
 // 通用参数
 const params = {
     accountId: data.accountId, // 账号id
-    pageType: data.pageType, // 页面类型
+    pageType: data.pageType || '', // 页面类型
     importantInTotalConversion: data.ImportantConversion, // 是否重要转化
-    currency: data.currency, // 货币
-    value: data.value, // 转化金额
+    currency: data.currency || '', // 货币
+    value: data.value || '', // 转化金额
     conversionType: data.conversionType, // 转化类型
     customerId: data.customerId // 转化类型
 };
@@ -379,85 +394,96 @@ log('ifUseGoogleEnhancedEC:', data.ifUseGoogleEnhancedEC);
 if (data.ifUseGoogleEnhancedEC) {
     const ecommerce = copyFromDataLayer('ecommerce') || {};
     log('ecommerce:', ecommerce);
-    // verifyMandatoryElements(data.eventType_enhanced, log, ecommerce);
-    // switch (data.eventType) {
-    //     case 'add_to_cart':
-    //         params.productIds = mapProductIds(ecommerce.add.products);
-    //         break;
-    //     case 'start_checkout':
-    //         params.productIds = mapProductIds(ecommerce.checkout.products);
-    //         break;
-    //     case 'purchase':
-    //         params.cartDetails = mapProductIds(ecommerce.purchase.products);
-    //         break;
-    //     default:
-    //         break;
-    // }
-    params.currency = ecommerce.currency; // 货币
-    params.value = ecommerce.value; // 货币
-    params.orderId = ecommerce.transaction_id; // 订单id
-    // 商品列表
-    params.list = ecommerce.items
-        ? ecommerce.items.map(item => {
-            return {
-                item_id: item.item_id, // 商品id
-                quantity: item.quantity, // 数量
-                item_type: 0, // 商品类别
-                // productName: item.item_name, // 商品名称
-                origin_price: item.price // 价格
-            };
-        })
-        : [];
 
-    log('params.list:', params.list);
-    if (params.list.length > 0) {
-        const tmp = params.list[0];
-        params.category = tmp.category; // 商品类别
-        params.productId = tmp.product_id; // 商品id
-        params.productName = tmp.productName; // 商品名称
+    params.list = []; // 初始化空数组
+    if (
+        params.conversionType == conversionTypeMap.view_content &&
+        ecommerce.hasOwnProperty(CvType2ParamKeyMap.view_content_category_list_page)
+    ) {
+        // view_content_category_list_page
+        const products = ecommerce.impressions;
+        addEcParam(params, products);
+    } else if (
+        params.conversionType == conversionTypeMap.view_content &&
+        ecommerce.hasOwnProperty(CvType2ParamKeyMap.view_content_product_detail_page)
+    ) {
+        // view_content_product_detail_page
+        const products = ecommerce.detail.products;
+        addEcParam(params, products);
+    } else if (
+        params.conversionType == conversionTypeMap.add_to_cart &&
+        ecommerce.hasOwnProperty(CvType2ParamKeyMap.add_to_cart)
+    ) {
+        // add_to_cart
+        const products = ecommerce.add.products;
+        addEcParam(params, products);
+    } else if (
+        params.conversionType == conversionTypeMap.start_checkout &&
+        ecommerce.hasOwnProperty(CvType2ParamKeyMap.start_checkout)
+    ) {
+        // start_checkout
+        const products = ecommerce.checkout.products;
+        addEcParam(params, products);
+    } else if (
+        params.conversionType == conversionTypeMap.purchase &&
+        ecommerce.hasOwnProperty(CvType2ParamKeyMap.purchase)
+    ) {
+        // purchase
+        const products = ecommerce.purchase.products;
+        addEcParam(params, products);
+        params.currency = ecommerce.currencyCode || '';
+        params.value = ecommerce.purchase.actionField.revenue;
+        params.orderId = ecommerce.purchase.actionField.id;
+    } else {
+        // GA4 通用电商参数
+        params.currency = ecommerce.currency || ecommerce.currencyCode || ''; // 货币
+        params.value = ecommerce.value || ''; // 转化价值
+        params.orderId = ecommerce.transaction_id; // 订单id
+        // 商品列表
+        params.list = ecommerce.items ? formatList(ecommerce.items) : [];
+
+        log('params.list:', params.list);
+        if (params.list.length > 0) {
+            const tmp = params.list[0];
+            params.category = tmp.category; // 商品类别
+            params.productId = tmp.product_id; // 商品id
+            params.productName = tmp.productName; // 商品名称
+        }
     }
 } else {
     // 广告主手动录入参数
     const listAry = data.list ? JSON.parse(data.list) : [];
-    params.list = listAry.map(item => {
-        return {
-            item_id: item.id, // 商品id
-            quantity: item.quantity, // 数量
-            item_type: 0, // 商品类别
-            // productName: item.item_name, // 商品名称
-            origin_price: item.price + '' // 价格
-        };
-    }); // 商品列表
+    params.list = formatList(listAry); // 商品列表
     params.category = data.category; // 商品类别
     params.orderId = data.orderId; // 订单id
     params.productId = data.productId; // 商品id
     params.productName = data.productName; // 商品名称
 
     switch (data.conversionType) {
-    case conversionTypeMap.search:
-        params.query = data.query; // 查询条件
-        break;
-    // case 'add_to_cart':
-    // case 'start_checkout':
-    // case 'purchase':
-    //     break;
-    default:
-        break;
+        case conversionTypeMap.search:
+            params.query = data.query; // 查询条件
+            break;
+        // case 'add_to_cart':
+        // case 'start_checkout':
+        // case 'purchase':
+        //     break;
+        default:
+            break;
     }
 }
 
 log('params:', params);
 
-if(params.conversionType != conversionTypeMap.pageview) {
-	const megoaaPush = createQueue('_megoaa'); // 创建数组
-	megoaaPush({
-		type: 'gtm',
-		acid: params.accountId,
-		conversionType: params.conversionType,
-		importantInTotalConversion: params.importantInTotalConversion,
-		value: params.value,
-		params: params
-	});
+if (params.conversionType != conversionTypeMap.pageview) {
+    const megoaaPush = createQueue('_megoaa'); // 创建数组
+    megoaaPush({
+        type: 'gtm',
+        acid: params.accountId,
+        conversionType: params.conversionType,
+        importantInTotalConversion: params.importantInTotalConversion,
+        value: params.value || '',
+        params: params
+    });
 }
 
 // 发送数据
@@ -465,11 +491,37 @@ if(params.conversionType != conversionTypeMap.pageview) {
 // verify enhanced mandatory fields
 function verifyMandatoryElements(eventType, log, ecommData) {}
 
-// function mapProductIds(products) {
-//     return products.map(i => {
-//         return i.id;
-//     });
-// }
+/**
+ * 格式化商品列表
+ *
+ * @param products 商品列表
+ * @returns 格式化后的商品列表
+ */
+function formatList(products) {
+    return products.map(i => {
+        const item = {};
+        item.id = i.id || i.item_id; // 商品id
+        item.quantity = i.quantity; // 数量
+        item.category = i.category; // 类别
+        item.name = i.name || i.item_name; // 名称
+        item.price = (i.price || i.origin_price) + ''; // 价格
+        return item;
+    });
+}
+
+/**
+ * 添加电商参数
+ *
+ * @param params - 参数对象
+ * @param products - 商品列表
+ */
+function addEcParam(params, products) {
+    if (products.length <= 0) {
+        return;
+    }
+    params.list = formatList(products); // 商品列表
+    params.category = products[0].category; // 商品类别
+}
 
 
 ___WEB_PERMISSIONS___
