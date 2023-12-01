@@ -1,6 +1,8 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
+  - sha: 4d66dca88a751209f357837dec360cdf974a59a1
+    changeNotes: Support list json or string
   - sha: 0000f125cbf8c09d3e0438adecb1ca5d2fe5f688
     changeNotes: Support more e-commerce parameter specifications
   - sha: 246769ff99982ec16d87790a364b63e12989d1f3
