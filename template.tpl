@@ -292,6 +292,16 @@ ___TEMPLATE_PARAMETERS___
             "paramName": "conversionType",
             "paramValue": "purchase",
             "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "view_content",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "add_to_cart",
+            "type": "EQUALS"
           }
         ]
       },
