@@ -446,13 +446,13 @@ if (data.ifUseGoogleEnhancedEC) {
     }
 } else {
     // 广告主手动录入参数
-	const listType = getType(data.list);
-	let listAry = [];
-	if (listType == 'array') { 
-		listAry = data.list;
-	} else if (listType == 'string') { 
-		listAry = JSON.parse(data.list) || [];
-	}
+    const listType = getType(data.list);
+    let listAry = [];
+    if (listType == 'array') { 
+        listAry = data.list;
+    } else if (listType == 'string') { 
+        listAry = JSON.parse(data.list) || [];
+    }
     params.list = formatList(listAry); // 商品列表
     params.category = data.category; // 商品类别
     params.orderId = data.orderId; // 订单id
@@ -498,7 +498,7 @@ function verifyMandatoryElements(eventType, log, ecommData) {}
  * @returns 格式化后的商品列表
  */
 function formatList(products) {
-	if (!products || products.length <= 0) {
+    if (!products || products.length <= 0) {
         return [];
     }
     return products.map(i => {
