@@ -1,6 +1,8 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
+  - sha: 8d385668a81203d28eeb285ca3bddca47b25891d
+    changeNotes: add 'nextjump' function to update cv param
   - sha: 4d66dca88a751209f357837dec360cdf974a59a1
     changeNotes: Support list json or string
   - sha: 0000f125cbf8c09d3e0438adecb1ca5d2fe5f688
