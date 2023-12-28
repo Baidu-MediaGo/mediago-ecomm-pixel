@@ -323,6 +323,14 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "TEXT",
+    "name": "nextJump",
+    "displayName": "Multiple Jump Domains",
+    "simpleValueType": true,
+    "help": "Please enter the domains of the landing page and any redirect pages to ensure better transmission of tracking parameters. If the path includes different domains, please enter all domains, separated by commas.",
+    "notSetText": "mediago.io,trace.mediago.io"
+  },
+  {
+    "type": "TEXT",
     "name": "customerId",
     "displayName": "Customer Id",
     "simpleValueType": true,
@@ -354,7 +362,11 @@ if (!MediagoPixelStatus) {
     // const megoaa = copyFromWindow('_megoaa'); // 获取window中的数组
     // log('megoaa:', megoaa);
     megoaaPush({ type: 'event', name: 'pageview' });
-    megoaaPush({ type: 'nextjump', link: '' });
+
+	const nextJump = (data.nextJump && getType(data.nextJump) == 'string') ? data.nextJump.split(',') : [];
+	if (nextJump.length > 0) { 
+		megoaaPush({ type: 'nextjump', link: nextJump });
+	}
 }
 
 log('data =', data);
