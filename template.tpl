@@ -225,30 +225,6 @@ ___TEMPLATE_PARAMETERS___
     "subParams": [
       {
         "type": "TEXT",
-        "name": "productId",
-        "displayName": "Product ID or SKU",
-        "simpleValueType": true,
-        "help": "The product ID or SKU of the item that was viewed, added to the cart or added to wishlist.",
-        "enablingConditions": [
-          {
-            "paramName": "conversionType",
-            "paramValue": "add_to_cart",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "add_to_wishlist",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "view_content",
-            "type": "EQUALS"
-          }
-        ]
-      },
-      {
-        "type": "TEXT",
         "name": "orderId",
         "displayName": "Order Id",
         "simpleValueType": true,
@@ -272,35 +248,34 @@ ___TEMPLATE_PARAMETERS___
         ]
       },
       {
-        "type": "TEXT",
-        "name": "list",
-        "displayName": "List",
+        "type": "SELECT",
+        "name": "NumberOfProduct",
+        "displayName": "How many products at page",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "multiple_products",
+            "displayValue": "Multiple Products"
+          },
+          {
+            "value": "only_one_product",
+            "displayValue": "Only One Product"
+          }
+        ],
         "simpleValueType": true,
-        "help": "Select the GTM Variable that returns a table containing the list of product IDs, unit price and quantity in the user\u0027s basket or order. Formatted as follows :[{\"id\":\"productID1\", \"price\":0.02, \"quantity\":1},{\"id\":\"productID2\", \"price\":0.03, \"quantity\":2}]",
+        "help": "This field describes the total number of products on the page.",
+        "defaultValue": "only_one_product"
+      },
+      {
+        "type": "TEXT",
+        "name": "productId",
+        "displayName": "Product ID or SKU",
+        "simpleValueType": true,
+        "help": "The product ID or SKU of the item that was viewed, added to the cart or added to wishlist.",
         "enablingConditions": [
           {
-            "paramName": "conversionType",
-            "paramValue": "add_payment_info",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "start_checkout",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "purchase",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "view_content",
-            "type": "EQUALS"
-          },
-          {
-            "paramName": "conversionType",
-            "paramValue": "add_to_cart",
+            "paramName": "NumberOfProduct",
+            "paramValue": "only_one_product",
             "type": "EQUALS"
           }
         ]
@@ -310,7 +285,28 @@ ___TEMPLATE_PARAMETERS___
         "name": "category",
         "displayName": "Category of the product or page",
         "simpleValueType": true,
-        "help": "This value should match the category values sent in your product catalog. (string)"
+        "help": "This value should match the category values sent in your product catalog. (string)",
+        "enablingConditions": [
+          {
+            "paramName": "NumberOfProduct",
+            "paramValue": "only_one_product",
+            "type": "EQUALS"
+          }
+        ]
+      },
+      {
+        "type": "TEXT",
+        "name": "list",
+        "displayName": "List",
+        "simpleValueType": true,
+        "help": "Select the GTM Variable that returns a table containing the list of product IDs, unit price and quantity in the user\u0027s basket or order. Formatted as follows :[{\"id\":\"productID1\", \"price\":0.02, \"quantity\":1, \"category\":\"3c\"},{\"id\":\"productID2\", \"price\":0.03, \"quantity\":2, \"category\":\"sport_equipment\"}]",
+        "enablingConditions": [
+          {
+            "paramName": "NumberOfProduct",
+            "paramValue": "multiple_products",
+            "type": "EQUALS"
+          }
+        ]
       }
     ],
     "enablingConditions": [
@@ -350,10 +346,13 @@ const createQueue = require('createQueue');
 const JSON = require('JSON');
 const getType = require('getType');
 
+
+log('data =', data);
+
 const MediagoPixelStatus = copyFromWindow('_mediago_pixel_status');
 log('MediagoPixelStatus:', MediagoPixelStatus);
 if (!MediagoPixelStatus) {
-    const pixelUrl = 'https://cdn.mediago.io/js/pixel.js';
+    const pixelUrl = 'https://cdn.mediago.io/js/pixel.js?acid=' + data.accountId;
     // Load the Mediago script if not already loaded
     // pixel对于iframe的操作，在编辑器内不被允许，会报错，不影响使用。
     injectScript(pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'pixel_megoaa_script');
@@ -364,12 +363,11 @@ if (!MediagoPixelStatus) {
     megoaaPush({ type: 'event', name: 'pageview' });
 
 	const nextJump = (data.nextJump && getType(data.nextJump) == 'string') ? data.nextJump.split(',') : [];
-	if (nextJump.length > 0) { 
+	if (nextJump.length > 0) {
 		megoaaPush({ type: 'nextjump', link: nextJump });
 	}
 }
 
-log('data =', data);
 
 const conversionTypeMap = {
     view_content: 'view_content',
@@ -470,13 +468,13 @@ if (data.ifUseGoogleEnhancedEC) {
     // 广告主手动录入参数
     const listType = getType(data.list);
     let listAry = [];
-    if (listType == 'array') { 
+    if (listType == 'array') {
         listAry = data.list;
-    } else if (listType == 'string') { 
+    } else if (listType == 'string') {
         listAry = JSON.parse(data.list) || [];
     }
     params.list = formatList(listAry); // 商品列表
-    params.category = data.category; // 商品类别
+    params.category = data.category || ''; // 商品类别
     params.orderId = data.orderId; // 订单id
     params.productId = data.productId; // 商品id
     params.productName = data.productName; // 商品名称
@@ -545,7 +543,7 @@ function addEcParam(params, products) {
         return;
     }
     params.list = formatList(products); // 商品列表
-    params.category = products[0].category; // 商品类别
+    params.category = products[0].category ? products[0].category : ''; // 商品类别
 }
 
 
