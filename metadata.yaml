@@ -1,6 +1,8 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
+  - sha: 5970cb89a0ca004313268a1931805c43b8ed5f0f
+    changeNotes: add 'NumberOfProduct' to update cv param, in order to support the scenario where there are multiple products on one page
   - sha: 8d385668a81203d28eeb285ca3bddca47b25891d
     changeNotes: add 'nextjump' function to update cv param
   - sha: 4d66dca88a751209f357837dec360cdf974a59a1
@@ -13,6 +15,6 @@ versions:
     changeNotes: Mediago-Ecomm-Pixel update
   - sha: 1ab38a63a99a0078376e1f32c95ea5cc7eb0f490
     changeNotes: Mediago-Ecomm-Pixel Initial Version
-  
 
-    
+
+
