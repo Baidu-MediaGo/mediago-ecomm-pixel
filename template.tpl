@@ -224,6 +224,72 @@ ___TEMPLATE_PARAMETERS___
     "groupStyle": "ZIPPY_OPEN",
     "subParams": [
       {
+        "type": "SELECT",
+        "name": "NumberOfProduct",
+        "displayName": "How many products at page",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "multiple_products",
+            "displayValue": "Multiple Products"
+          },
+          {
+            "value": "only_one_product",
+            "displayValue": "Only One Product"
+          }
+        ],
+        "simpleValueType": true,
+        "help": "This field describes the total number of products on the page.",
+        "defaultValue": "only_one_product",
+        "enablingConditions": [
+          {
+            "paramName": "conversionType",
+            "paramValue": "view_content",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "add_to_cart",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "add_to_wishlist",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "search",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "lead",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "complete_registration",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "app_install",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "click_button",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "pageview",
+            "type": "EQUALS"
+          }
+        ]
+      },
+      {
         "type": "TEXT",
         "name": "orderId",
         "displayName": "Order Id",
@@ -246,25 +312,6 @@ ___TEMPLATE_PARAMETERS___
             "type": "EQUALS"
           }
         ]
-      },
-      {
-        "type": "SELECT",
-        "name": "NumberOfProduct",
-        "displayName": "How many products at page",
-        "macrosInSelect": false,
-        "selectItems": [
-          {
-            "value": "multiple_products",
-            "displayValue": "Multiple Products"
-          },
-          {
-            "value": "only_one_product",
-            "displayValue": "Only One Product"
-          }
-        ],
-        "simpleValueType": true,
-        "help": "This field describes the total number of products on the page.",
-        "defaultValue": "only_one_product"
       },
       {
         "type": "TEXT",
@@ -304,6 +351,21 @@ ___TEMPLATE_PARAMETERS___
           {
             "paramName": "NumberOfProduct",
             "paramValue": "multiple_products",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "add_payment_info",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "start_checkout",
+            "type": "EQUALS"
+          },
+          {
+            "paramName": "conversionType",
+            "paramValue": "purchase",
             "type": "EQUALS"
           }
         ]
