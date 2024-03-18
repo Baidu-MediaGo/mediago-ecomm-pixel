@@ -414,7 +414,7 @@ log('data =', data);
 const MediagoPixelStatus = copyFromWindow('_mediago_pixel_status');
 log('MediagoPixelStatus:', MediagoPixelStatus);
 if (!MediagoPixelStatus) {
-    const pixelUrl = 'https://cdn.mediago.io/js/pixel.js?acid=' + data.accountId;
+    const pixelUrl = 'https://cdn.mediago.io/js/pixel.js?channel=gtm-mediago&acid=' + data.accountId;
     // Load the Mediago script if not already loaded
     // pixel对于iframe的操作，在编辑器内不被允许，会报错，不影响使用。
     injectScript(pixelUrl, data.gtmOnSuccess, data.gtmOnFailure, 'pixel_megoaa_script');
