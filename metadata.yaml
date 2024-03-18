@@ -1,6 +1,8 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
+  - sha: 7cd26f58248bb4c19408a16e57c54ac285896a6b
+    changeNotes: add channel to js
   - sha: 4da94fa846c212994b693f35846a9be7ccd2d34d
     changeNotes: add number of product set, and the config for the event related to purchase restrictions is set to “orderid” and “list”
   - sha: 8d385668a81203d28eeb285ca3bddca47b25891d
