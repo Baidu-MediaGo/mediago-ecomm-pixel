@@ -1,6 +1,8 @@
 homepage: "www.mediago.com"
 documentation: "https://business.mediago.io/platform/helpCenter/conversionTrackingSection#qa100053"
 versions:
+  - sha: 6babfd78c8760f85dcabae78c385f02458022702
+    changeNotes: pageview add acid param
   - sha: 7cd26f58248bb4c19408a16e57c54ac285896a6b
     changeNotes: add channel to js
   - sha: 4da94fa846c212994b693f35846a9be7ccd2d34d
