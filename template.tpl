@@ -422,11 +422,11 @@ if (!MediagoPixelStatus) {
     const megoaaPush = createQueue('_megoaa'); // 创建数组
     // const megoaa = copyFromWindow('_megoaa'); // 获取window中的数组
     // log('megoaa:', megoaa);
-    megoaaPush({ type: 'event', name: 'pageview' });
+    megoaaPush({ type: 'event', name: 'pageview', acid: data.accountId });
 
 	const nextJump = (data.nextJump && getType(data.nextJump) == 'string') ? data.nextJump.split(',') : [];
 	if (nextJump.length > 0) {
-		megoaaPush({ type: 'nextjump', link: nextJump });
+		megoaaPush({ type: 'nextjump', link: nextJump, acid: data.accountId });
 	}
 }
 
